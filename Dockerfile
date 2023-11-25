@@ -18,4 +18,4 @@ EXPOSE 8080
 ENV NAME World
 
 # Run proxy_server.py when the container launches
-CMD ["python", "./proxy_server.py"]
+CMD ["python", "proxy_server.py"]

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the name of the image
-IMAGE_NAME="your-image-name"
+IMAGE_NAME="proxy-server"
 
 # Stop the Docker container
 echo "Stopping the Docker container: $IMAGE_NAME"
