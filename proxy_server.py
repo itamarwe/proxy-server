@@ -3,6 +3,7 @@ import requests
 import logging
 import sys
 import os
+from utils import log_request
 
 app = Flask(__name__)
 
@@ -20,9 +21,6 @@ logging.basicConfig(
     ]
 )
 
-def log_request(req, res):
-    logging.info(f"Request: {req.method} {req.url} - Payload: {req.data} - Response: {res.status_code}, {res.content}")
-
 @app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE'])
 @app.route('/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def proxy(path):
@@ -33,7 +31,7 @@ def proxy(path):
         response = requests.post(f"{DESTINATION_URL}/{path}", json=request.json)
     # Add similar blocks for PUT, DELETE, etc.
 
-    log_request(request, response)
+    log_request(logging.info, request, response)
     return Response(response.content, status=response.status_code, content_type=response.headers['Content-Type'])
 
 def run_app():
