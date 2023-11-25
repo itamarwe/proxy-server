@@ -21,18 +21,30 @@ logging.basicConfig(
     ]
 )
 
-@app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE'])
-@app.route('/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'])
+@app.route('/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'])
 def proxy(path):
-    global DESTINATION_URL
-    if request.method == 'GET':
-        response = requests.get(f"{DESTINATION_URL}/{path}", params=request.args)
-    elif request.method == 'POST':
-        response = requests.post(f"{DESTINATION_URL}/{path}", json=request.json)
-    # Add similar blocks for PUT, DELETE, etc.
+    # Get the URL to forward the request to
+    url = f"{DESTINATION_URL}/{path}"
 
+    # Forward the headers, excluding the Host header to avoid conflicts
+    headers = {key: value for key, value in request.headers if key != 'Host'}
+
+    # Make the outgoing request with the same method, headers, and data as the incoming request
+    response = requests.request(
+        method=request.method,
+        url=url,
+        headers=headers,
+        data=request.get_data(),
+        params=request.args,
+        allow_redirects=False
+    )
+
+    # Log the request
     log_request(logging.info, request, response)
-    return Response(response.content, status=response.status_code, content_type=response.headers['Content-Type'])
+
+    # Create a response object and return it
+    return Response(response.content, status=response.status_code, headers=dict(response.headers))
 
 def run_app():
     app.run(host='0.0.0.0', port=8080)
