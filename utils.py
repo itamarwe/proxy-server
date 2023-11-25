@@ -1,2 +1,2 @@
 def log_request(logger, req, res):
-    logger(f"Request: {req.method} {req.url} - Payload: {req.data} - Response: {res.status_code}, {res.content}")
+    logger(f"Request: Header: {req.header}\nMethod:{req.method}\nURL:{req.url}\nPayload: {req.data}\nResponse: {res.status_code}, {res.content}")
